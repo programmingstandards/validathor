@@ -4,13 +4,15 @@
   "description": "A javascript validation utility",
   "main": "index.js",
   "scripts": {
-    "test": "BABEL_ENV=testing jest --watch"
+    "test-prev-config": "BABEL_ENV=testing jest --watch",
+    "test": "SET BABEL_ENV=testing && jest --watch"
   },
   "author": "Samu Joseph",
   "license": "ISC",
   "devDependencies": {
     "babel-jest": "^21.2.0",
     "babel-preset-env": "^1.6.0",
+    "eslint": "^4.9.0",    
     "jest-cli": "^21.2.1"
   }
 }
