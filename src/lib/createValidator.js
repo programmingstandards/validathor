@@ -1,24 +1,11 @@
-export function createValidator({validator, validatorId, messageCodes={}}) {
-    const validate = (data, customMessageCodes={}) => {
+export function createValidator({validator, validatorId}) {
+    const validate = (data) => {
 
-        //merge default codes and custom codes
-        const mergedMessageCodes = Object.keys(messageCodes)
-            .reduce((prev, messageCode) => {
-                return {
-                    ...prev,
-                    [messageCode]: {
-                        ...prev[messageCode],
-                        ...customMessageCodes[messageCode]
-                    }
-                }
-            }, messageCodes);
-
-        let result = validator(data, mergedMessageCodes);
+        let result = validator(data);
 
         const { valid = true, messages } = result;
 
         const { getMessageKeys, getMessages, getMessageCount, hasMessages } = messages;
-
 
         return {
             validatorId,

@@ -10,9 +10,10 @@
   "author": "Samu Joseph",
   "license": "ISC",
   "devDependencies": {
+    "babel-eslint": "^8.0.1",
     "babel-jest": "^21.2.0",
     "babel-preset-env": "^1.6.0",
-    "eslint": "^4.9.0",    
+    "eslint": "^4.9.0",
     "jest-cli": "^21.2.1"
   }
 }
