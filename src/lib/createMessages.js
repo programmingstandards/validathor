@@ -1,52 +1,111 @@
-export const createMessages = (messageFields = []) => {
-    let messages = messageFields.reduce((prev, messageField) => {
-        prev[messageField] = [];
-        return prev;
-    }, {});
+export const createMessages = (messageFields) => {
+    let messages = {};
+    if(messageFields.constructor === Object) {
+        messages = {...messageFields};
+    } else if(Array.isArray(messageFields)) {
+        messages = messageFields.reduce((prev, messageField) => {
+            prev[messageField] = [];
+            return prev;
+        }, {});
+    }
 
-    const getMessageKeys = () => messageFields;
+    const getMessageKeys = () => Object.keys(messages);
 
     const getMessageKeysCount = () => getMessageKeys().length;
     
-    const hasMessageKeys = () => getMessageKeysCount() > 0;
-    
+    function hasMessageKeys (keys, every=true) {
+        switch(arguments.length) {
+            case 0:
+                return getMessageKeysCount() > 0;
+            case 1:
+            case 2:
+                if(Array.isArray(keys)) {
+                    const iterate = every ? 'every' : 'some';
+                    return keys[iterate]((key) => hasMessageKeys(key));
+                }
+                return getMessageKeys().includes(keys);
+            default: 
+                break;
+        }
+        return false;
+    }
 
     const getMessages = messageType => {
         return messageType ? (messages[messageType] || []) : messages;
     };
 
-    const getMessageCount = messageType => {
-        if(messageType) {
-            return getMessages(messageType).length;
-        } else {
-            return getMessageKeys()
-                .reduce((prev, messageTypeKey) => prev + getMessages(messageTypeKey).length, 0);
+    function getMessagesCount(messageKeys) {
+        switch(arguments.length) {
+            case 0:
+                return getMessageKeys()
+                    .reduce((prev, messageKey) => prev + getMessagesCount(messageKey), 0);
+            case 1:
+                if(Array.isArray(messageKeys)) {
+                    return messageKeys
+                    .reduce((prev, messageKey) => prev + getMessagesCount(messageKey), 0);   
+                }
+                return getMessages(messageKeys).length;        
         }
-    };
+        return 0;
+    }
 
-    const hasMessages = messageType => {
-        if (messageType) {
-            return getMessageCount(messageType) > 0;
-        } else {
-            return getMessageKeys()
-                .some(messageTypeKey => getMessageCount(messageTypeKey) > 0);
+    function hasMessages(messageKeys, every = false) {
+        switch(arguments.length) {
+            case 0:
+                return getMessageKeys()
+                        .some(messageKey => getMessagesCount(messageKey) > 0);
+            case 1:
+                if(typeof arguments[0 === "boolean"]){
+                    const iterate = every ? 'every' : 'some';                    
+                    return getMessageKeys()[iterate](messageKey => getMessagesCount(messageKey) > 0);
+                }
+            case 2:
+                if(Array.isArray(messageKeys)) {
+                    const iterate = every ? 'every' : 'some';
+                    return messageKeys[iterate](messageKey => getMessagesCount(messageKey) > 0);
+                }
+                return getMessagesCount(messageKeys) > 0;
         }
-    };
+        return false;
+    }
 
-
-    const pushMessage = (messageType, messageCode, message) => {
-        messages[messageType].push({
-            messageCode,
-            message,
-        });
+    const pushMessages = (messageKey, message, messageCode, ) => {
+        if(typeof messageKey === "string") {
+            messages[messageKey].push({
+                messageCode,
+                message,
+            });
+        } else if (Array.isArray(messageKey)) {
+            const messagesToBePushed = messageKey;
+            messagesToBePushed.forEach((messageToBePushed) => {
+                const [messageKey, message, messageCode] = messageToBePushed;
+                messages[messageKey].push({
+                    messageCode,
+                    message,
+                });
+            });
+        } else if(arguments[0].constructor === Object) {
+            const messagesToBePushed = arguments[0];
+            const messageKeys = Object.keys(messagesToBePushed);
+            messageKeys.forEach((key) => {
+                const messagesForCurrentKey = messagesToBePushed[key];
+                messagesForCurrentKey.forEach((messageForCurrentKey)=> {
+                    const { message, messageCode } = messageForCurrentKey;     
+                    messages[key].push({
+                        messageCode,
+                        message,
+                    });           
+                });
+            });        
+        }
     };
     return {
-        getMessageKeys,
         hasMessageKeys,
+        getMessageKeys,        
         getMessageKeysCount,
         hasMessages,
-        getMessageCount,
         getMessages,
-        pushMessage,
+        getMessagesCount,        
+        pushMessages,
     };
 };
