@@ -8,4 +8,5 @@ module.exports = {
         "^.+\\.js$": "babel-jest"
     },
     transformIgnorePatterns: ["<rootDir>/node_modules/"],
+    verbose: true
 };

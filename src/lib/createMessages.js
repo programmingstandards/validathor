@@ -1,10 +1,15 @@
-export const createMessages = (messageFields) => {
+export const createMessages = (messageFields = []) => {
     let messages = messageFields.reduce((prev, messageField) => {
         prev[messageField] = [];
         return prev;
     }, {});
 
     const getMessageKeys = () => messageFields;
+
+    const getMessageKeysCount = () => getMessageKeys().length;
+    
+    const hasMessageKeys = () => getMessageKeysCount() > 0;
+    
 
     const getMessages = messageType => {
         return messageType ? (messages[messageType] || []) : messages;
@@ -37,6 +42,8 @@ export const createMessages = (messageFields) => {
     };
     return {
         getMessageKeys,
+        hasMessageKeys,
+        getMessageKeysCount,
         hasMessages,
         getMessageCount,
         getMessages,
